@@ -25,15 +25,14 @@ const flowItems = [
 
 // ✅ Extract hook logic into inner component wrapped by Suspense
 function SideNavInner({ componentItems = [] }: SideNavProps) {
-  const pathname = usePathname();
+  // const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const isFlow = pathname.startsWith("/uiFlows");
-  const navItems = isFlow ? flowItems : componentItems;
-  const basePath = isFlow ? "/uiFlows" : "/components";
-  const currentTag = searchParams.get("tag") || (isFlow ? "onboarding" : "all");
+  const navItems = componentItems;
+  const basePath = "/components";
+  const currentTag = searchParams.get("tag") || "all";
 
-  if (!isFlow && (!componentItems || componentItems.length === 0)) {
+  if (!navItems) {
     return (
       <div className="flex flex-col min-w-[180px] max-w-[180px] text-white/60 px-4 py-2">
         No component names provided.
@@ -56,6 +55,7 @@ function SideNavInner({ componentItems = [] }: SideNavProps) {
                 ? "text-white font-semibold"
                 : "text-white/50  hover:text-white"
             }`}
+            prefetch={true}
           >
             {item.name}
           </Link>

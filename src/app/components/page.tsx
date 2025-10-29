@@ -38,7 +38,6 @@ export default async function Components({
 
   try {
     records = await getAirtableRecords<Fields>();
-    console.log("Fetched records:", records);
   } catch (e) {
     console.error("Error fetching records:", e);
     // swallow and render empty state
@@ -91,7 +90,7 @@ export default async function Components({
   return (
     <div className="flex">
       <Suspense fallback={<div>Loading...</div>}>
-        <SideNav />
+        <SideNav componentItems={componentItems} />
       </Suspense>
 
       <div className="flex-1 px-4 md:px-8">
