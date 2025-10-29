@@ -75,7 +75,7 @@ function TabsRowInner() {
           onChange={(e) => setIntensity(e.target.value)}
           className="bg-transparent border border-white/40 rounded-md px-2 py-1 text-white/80"
         >
-          <option value="">Data Intensity</option>
+          <option value="">Data Density</option>
           <option value="low">Low</option>
           <option value="medium">Medium</option>
           <option value="high">High</option>

@@ -16,7 +16,7 @@ type Fields = {
   Description?: string;
   Theme?: string; // e.g., "light" | "dark"
   "Colour Mode"?: string[]; // e.g., ["Light"] | ["Dark"]
-  "Data Intensity"?: string; // e.g., "low" | "medium" | "high"
+  "Data Density"?: string; // e.g., "low" | "medium" | "high"
 };
 
 type ComponentsPageProps = {
@@ -77,7 +77,7 @@ export default async function Components({
   // ✅ Filter by theme and intensity (if provided)
   filteredRecords = filteredRecords.filter((r) => {
     const recordTheme = r.fields["Colour Mode"]?.[0]?.toLowerCase() || "";
-    const recordIntensity = r.fields["Data Intensity"]?.toLowerCase() || "";
+    const recordIntensity = r.fields["Data Density"]?.toLowerCase() || "";
 
     const matchesTheme = theme ? recordTheme === theme.toLowerCase() : true;
     const matchesIntensity = intensity
