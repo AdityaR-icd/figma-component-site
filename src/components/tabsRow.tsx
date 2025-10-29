@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { Suspense, useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
 
-const TabsRow = () => {
+// Inner component containing hooks — wrapped later in Suspense
+function TabsRowInner() {
   const tabs = [{ name: "Components", href: "/components" }];
   const path = usePathname();
   const router = useRouter();
@@ -15,15 +16,6 @@ const TabsRow = () => {
   const [intensity, setIntensity] = useState(
     searchParams.get("intensity") || ""
   );
-  const [designStyles, setDesignStyles] = useState<string[]>([]);
-
-  const designOptions = [
-    "Minimal",
-    "Neumorphic",
-    "Skeuomorphic",
-    "Flat",
-    "Glassmorphism",
-  ];
 
   // Update URL params when theme or intensity changes
   useEffect(() => {
@@ -39,16 +31,9 @@ const TabsRow = () => {
     router.replace(`${path}${query ? `?${query}` : ""}`);
   }, [theme, intensity]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleDesignSelect = (style: string) => {
-    setDesignStyles((prev) =>
-      prev.includes(style) ? prev.filter((s) => s !== style) : [...prev, style]
-    );
-  };
-
   const clearFilters = () => {
     setTheme("");
     setIntensity("");
-    setDesignStyles([]);
     router.replace(path); // Clear all params
   };
 
@@ -115,6 +100,15 @@ const TabsRow = () => {
       </div>
     </div>
   );
-};
+}
 
-export default TabsRow;
+// ✅ Suspense-wrapped export to silence useSearchParams() build warnings
+export default function TabsRow() {
+  return (
+    <Suspense
+      fallback={<div className="text-white/50">Loading filters...</div>}
+    >
+      <TabsRowInner />
+    </Suspense>
+  );
+}

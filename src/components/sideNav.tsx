@@ -1,11 +1,8 @@
 "use client";
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
 
-type Fields = {
-  "Component Name": string;
-  [key: string]: any;
-};
+import Link from "next/link";
+import { Suspense } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 
 type SideNavProps = {
   componentItems?: { name: string; tag: string }[];
@@ -26,7 +23,8 @@ const flowItems = [
   { name: "User Journey", tag: "user-journey" },
 ];
 
-const SideNav = ({ componentItems = [] }: SideNavProps) => {
+// ✅ Extract hook logic into inner component wrapped by Suspense
+function SideNavInner({ componentItems = [] }: SideNavProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -65,6 +63,12 @@ const SideNav = ({ componentItems = [] }: SideNavProps) => {
       })}
     </div>
   );
-};
+}
 
-export default SideNav;
+export default function SideNav(props: SideNavProps) {
+  return (
+    <Suspense fallback={<div className="text-white/50">Loading menu...</div>}>
+      <SideNavInner {...props} />
+    </Suspense>
+  );
+}
