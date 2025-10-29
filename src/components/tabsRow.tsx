@@ -105,7 +105,7 @@ const TabsRow = () => {
         </button>
 
         {/* Search Input */}
-        <div className="border-l-2 border-white/60 pl-4">
+        <div className="border border-white/40 rounded-md px-3 py-1">
           <input
             type="text"
             placeholder="Search components..."
