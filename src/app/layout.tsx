@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/navbar";
 import TabsRow from "@/components/tabsRow";
 import { Suspense } from "react";
+import Loader from "@/components/loader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,11 +29,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased px-4 md:px-[65px] py-4 md:py-[35px]`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased px-4 md:px-[65px] py-4 md:py-[35px] relative z-1`}
       >
         <Navbar />
         <TabsRow />
-        <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+        <Suspense fallback={<Loader />}>{children}</Suspense>
       </body>
     </html>
   );

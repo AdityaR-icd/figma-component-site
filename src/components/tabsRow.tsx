@@ -16,24 +16,33 @@ function TabsRowInner() {
   const [intensity, setIntensity] = useState(
     searchParams.get("intensity") || ""
   );
+  const [search, setSearch] = useState(searchParams.get("search") || "");
 
-  // Update URL params when theme or intensity changes
+  // ✅ Debounce search updates
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
+    const handler = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
 
-    if (theme) params.set("theme", theme);
-    else params.delete("theme");
+      if (theme) params.set("theme", theme);
+      else params.delete("theme");
 
-    if (intensity) params.set("intensity", intensity);
-    else params.delete("intensity");
+      if (intensity) params.set("intensity", intensity);
+      else params.delete("intensity");
 
-    const query = params.toString();
-    router.replace(`${path}${query ? `?${query}` : ""}`);
-  }, [theme, intensity]); // eslint-disable-line react-hooks/exhaustive-deps
+      if (search.trim()) params.set("search", search.trim());
+      else params.delete("search");
+
+      const query = params.toString();
+      router.replace(`${path}${query ? `?${query}` : ""}`);
+    }, 500);
+
+    return () => clearTimeout(handler); // cleanup on unmount or re-type
+  }, [theme, intensity, search]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const clearFilters = () => {
     setTheme("");
     setIntensity("");
+    setSearch("");
     router.replace(path); // Clear all params
   };
 
@@ -62,9 +71,11 @@ function TabsRowInner() {
         <select
           value={theme}
           onChange={(e) => setTheme(e.target.value)}
-          className="bg-transparent border border-white/40 rounded-md px-2 py-1 text-white/80"
+          className="bg-transparent border border-white/40 rounded-md text-white/80 px-3 py-1 h-[38px] focus:outline-none"
         >
-          <option value="">Theme</option>
+          <option value="" disabled hidden>
+            Theme
+          </option>
           <option value="light">Light</option>
           <option value="dark">Dark</option>
         </select>
@@ -73,30 +84,33 @@ function TabsRowInner() {
         <select
           value={intensity}
           onChange={(e) => setIntensity(e.target.value)}
-          className="bg-transparent border border-white/40 rounded-md px-2 py-1 text-white/80"
+          className="bg-transparent border border-white/40 rounded-md text-white/80 px-3 py-1 h-[38px] focus:outline-none"
         >
-          <option value="">Data Density</option>
+          <option value="" disabled hidden>
+            Data Density
+          </option>
           <option value="low">Low</option>
           <option value="medium">Medium</option>
           <option value="high">High</option>
         </select>
 
-        {/* Clear Filters Button */}
-        <button
-          onClick={clearFilters}
-          className="text-gray-400 hover:text-white border border-white/30 rounded-md px-3 py-1 transition-colors"
-        >
-          Clear
-        </button>
-
         {/* Search Input */}
-        <div className="border border-white/40 rounded-md px-3 py-1">
+        <div className="border border-white/40 rounded-md px-2 py-1 flex items-center">
           <input
             type="text"
             placeholder="Search components..."
-            className="px-2 py-1 bg-transparent outline-none text-white/80 placeholder:text-white/50"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="px-2 py-1 bg-transparent outline-none text-white/80 placeholder:text-white/50 w-[180px]"
           />
         </div>
+        {/* Clear Filters Button */}
+        <button
+          onClick={clearFilters}
+          className="text-white hover:text-white border border-white/30 rounded-md px-3 py-1 h-[38px] transition-colors"
+        >
+          Clear
+        </button>
       </div>
     </div>
   );

@@ -28,8 +28,6 @@ const RecordCard = ({ fields }: Props) => {
 
   const title = fields["Component Name"] || "Untitled Component";
   const figmaUrl = fields.figma_url;
-  const description = fields.Description;
-  const componentType = fields["Component Type"]?.join(", ");
   const imageUrl = fields.Notes?.[0]?.thumbnails?.large?.url;
 
   return (

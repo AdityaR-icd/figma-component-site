@@ -24,6 +24,7 @@ type ComponentsPageProps = {
     tag?: string;
     theme?: string;
     intensity?: string;
+    search?: string; // ✅ Added missing param
   };
 };
 
@@ -32,6 +33,7 @@ export default async function Components({
 }: ComponentsPageProps) {
   const tag = searchParams?.tag || "all";
   const theme = searchParams?.theme || "";
+  const search = searchParams?.search || "";
   const intensity = searchParams?.intensity || "";
 
   let records: AirtableRecord<Fields>[] = [];
@@ -40,10 +42,9 @@ export default async function Components({
     records = await getAirtableRecords<Fields>();
   } catch (e) {
     console.error("Error fetching records:", e);
-    // swallow and render empty state
   }
 
-  // ✅ Create unique nav items from "Component Name"
+  // ✅ Generate unique component items for the sidebar
   const componentNames = records
     .map((r) => r.fields["Component Name"])
     .filter((name): name is string => Boolean(name));
@@ -60,7 +61,7 @@ export default async function Components({
 
   componentItems.unshift({ name: "All Components", tag: "all" });
 
-  // ✅ Filter by component name (tag)
+  // ✅ Filter by selected tag
   let filteredRecords =
     tag === "all"
       ? records
@@ -74,22 +75,33 @@ export default async function Components({
           return slug === tag;
         });
 
-  // ✅ Filter by theme and intensity (if provided)
+  // ✅ Normalize search input
+  const normalizedSearch = search.replace(/[-&]/g, " ").trim().toLowerCase();
+
+  // ✅ Apply filters: theme, intensity, and search
   filteredRecords = filteredRecords.filter((r) => {
     const recordTheme = r.fields["Colour Mode"]?.[0]?.toLowerCase() || "";
     const recordIntensity = r.fields["Data Density"]?.toLowerCase() || "";
+    const recordName = r.fields["Component Name"]?.toLowerCase() || "";
 
     const matchesTheme = theme ? recordTheme === theme.toLowerCase() : true;
     const matchesIntensity = intensity
       ? recordIntensity === intensity.toLowerCase()
       : true;
+    const matchesSearch = normalizedSearch
+      ? recordName.includes(normalizedSearch)
+      : true;
 
-    return matchesTheme && matchesIntensity;
+    return matchesTheme && matchesIntensity && matchesSearch;
   });
 
   return (
     <div className="flex">
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense
+        fallback={
+          <div className="text-white animate-spin border border-white/70 rounded-full w-3 h-3"></div>
+        }
+      >
         <SideNav componentItems={componentItems} />
       </Suspense>
 
@@ -101,6 +113,7 @@ export default async function Components({
               {tag}
               {theme && ` (${theme})`}
               {intensity && ` [${intensity}]`}
+              {search && ` matching "${search}"`}
             </span>
             .
           </div>
