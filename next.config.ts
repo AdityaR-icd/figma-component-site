@@ -12,6 +12,15 @@ const nextConfig: NextConfig = {
     // ✅ Skip ESLint checks during build
     ignoreDuringBuilds: true,
   },
+  async redirects() {
+    return [
+      {
+        source: "/",          // redirect from homepage
+        destination: "/components", // to components page
+        permanent: true,       // 308 redirect (set false for temporary)
+      },
+    ];
+  },
 };
 
 export default nextConfig;
